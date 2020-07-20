@@ -21,7 +21,7 @@
             <span class="absolute text-white right-0 px-3"><i class="fas fa-sort-down"></i></span>
         </div>
         <div class="flex-grow overflow-y-auto">
-            <div class="container mx-auto border-red p-3">
+            <div class="container mx-auto border-red p-3 text-left">
                 <div class="pb-2 text-red-600">name</div>
                 <p class="inline-block border border-red-600 rounded-b-lg rounded-tr-lg p-3">
                     sadfj;saljf;lsajf;lsajfd;lj saf safs fd safdj;lsdj;lkjfd;
@@ -33,7 +33,7 @@
                     sadfj;saljf;lsajf;lsajfd;lj saf safs fd safdj;lsdj;lkjfd;
                 </p>
             </div>
-            <div class="container mx-auto border-red p-3">
+            <div class="container mx-auto border-red p-3 text-left">
                 <div class="pb-2 text-red-600">name</div>
                 <p class="inline-block border border-red-600 rounded-b-lg rounded-tr-lg p-3">
                     sadfj;saljf;lsajf;lsajfd;lj saf safs fd safdj;lsdj;lkjfd;
@@ -45,13 +45,13 @@
                     sadfj;saljf;lsajf;lsajfd;lj saf safs fd safdj;lsdj;lkjfd;
                 </p>
             </div>
-            <div class="container mx-auto border-red p-3">
+            <div class="container mx-auto border-red p-3 text-left">
                 <div class="pb-2 text-red-600">name</div>
                 <p class="inline-block border border-red-600 rounded-b-lg rounded-tr-lg p-3">
                     sadfj;saljf;lsajf;lsajfd;lj saf safs fd safdj;lsdj;lkjfd;
                 </p>
             </div>
-            <div class="container mx-auto border-red p-3">
+            <div class="container mx-auto border-red p-3 text-left">
                 <div class="pb-2 text-red-600">name</div>
                 <img
                     class="w-1/3 py-5 px-24 cursor-pointer inline-block"
@@ -73,7 +73,7 @@
                     sadfj;saljf;lsajf;lsajfd;lj saf safs fd safdj;lsdj;lkjfd;
                 </p>
             </div>
-            <div class="container mx-auto border-red p-3">
+            <div class="container mx-auto border-red p-3 text-left">
                 <div class="pb-2 text-red-600">name</div>
                 <p class="inline-block border border-red-600 rounded-b-lg rounded-tr-lg p-3">
                     sadfj;saljf;lsajf;lsajfd;lj saf safs fd safdj;lsdj;lkjfd;
