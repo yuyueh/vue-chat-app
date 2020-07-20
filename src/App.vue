@@ -4,6 +4,22 @@
     </div>
 </template>
 
+<script lang="ts">
+import Vue from 'vue';
+
+import * as firebase from 'firebase';
+import 'firebase/auth';
+import 'firebase/database';
+import 'firebase/storage';
+import * as firebaseConfig from './const/firebase';
+
+export default Vue.extend({
+    async mounted() {
+        firebase.initializeApp(firebaseConfig.default);
+    },
+});
+</script>
+
 <style lang="scss">
 #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
