@@ -4,6 +4,18 @@ import { Message } from '@/models/MessageModel';
 
 const roomId = 'ueV66nJQ69h8jqNZvPa6';
 const itemPerPage = 10;
+let messagesRef: firebase.firestore.CollectionReference;
+const messageRefFactory = () => {
+    if (!messagesRef) {
+        messagesRef = firebase
+            .firestore()
+            .collection('messages')
+            .doc(roomId)
+            .collection('messages');
+    }
+
+    return messagesRef;
+};
 
 const documentToMessage = (
     rootState: any,
@@ -29,6 +41,9 @@ const ChatModule: Module<any, any> = {
     mutations: {
         setAllMembers(state, members) {
             state.members = members;
+        },
+        setMessages(state, messages: Message[]) {
+            state.messages = messages;
         },
         pushBottomMessage(state, message: Message) {
             state.messages = [...state.messages, message];
@@ -64,11 +79,7 @@ const ChatModule: Module<any, any> = {
                 });
         },
         listenMessage({ commit, rootState, state }) {
-            firebase
-                .firestore()
-                .collection('messages')
-                .doc(roomId)
-                .collection('messages')
+            messageRefFactory()
                 .orderBy('timestamp', 'desc')
                 .limit(itemPerPage)
                 .onSnapshot((s) => {
@@ -88,12 +99,8 @@ const ChatModule: Module<any, any> = {
                         });
                 });
         },
-        loadMessagesBefore({ commit, rootState, state }, { doc: lastDocument }) {
-            return firebase
-                .firestore()
-                .collection('messages')
-                .doc(roomId)
-                .collection('messages')
+        loadTopMessages({ commit, rootState, state }, { doc: lastDocument }) {
+            return messageRefFactory()
                 .orderBy('timestamp', 'desc')
                 .startAfter(lastDocument)
                 .limit(itemPerPage)
@@ -105,12 +112,8 @@ const ChatModule: Module<any, any> = {
                     );
                 });
         },
-        loadMessagesAfter({ commit, rootState, state }, { doc: firstDocument }) {
-            return firebase
-                .firestore()
-                .collection('messages')
-                .doc(roomId)
-                .collection('messages')
+        loadBottomMessages({ commit, rootState, state }, { doc: firstDocument }) {
+            return messageRefFactory()
                 .orderBy('timestamp', 'desc')
                 .endBefore(firstDocument)
                 .limit(itemPerPage)
@@ -123,17 +126,38 @@ const ChatModule: Module<any, any> = {
                 });
         },
         sendMessage({ rootState }, text) {
-            return firebase
-                .firestore()
-                .collection('messages')
-                .doc(roomId)
-                .collection('messages')
-                .add({
-                    type: 1,
-                    uid: rootState.user.uid,
-                    text,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                });
+            return messageRefFactory().add({
+                type: 1,
+                uid: rootState.user.uid,
+                text,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+        },
+        async queryMessageRange({ commit, rootState, state }, id) {
+            const targetDoc = await messageRefFactory().doc(id).get();
+
+            if (!targetDoc.exists) {
+                throw Error('message not found.');
+            }
+
+            const { docs: newer } = await messageRefFactory()
+                .orderBy('timestamp', 'asc')
+                .startAfter(targetDoc)
+                .limit(itemPerPage / 2)
+                .get();
+
+            const { docs: older } = await messageRefFactory()
+                .orderBy('timestamp', 'desc')
+                .startAt(targetDoc)
+                .limit(itemPerPage / 2)
+                .get();
+
+            const result = [
+                ...older.slice().reverse().map(documentToMessage.bind(this, rootState, state)),
+                ...newer.map(documentToMessage.bind(this, rootState, state)),
+            ];
+
+            commit('setMessages', result);
         },
     },
     getters: {

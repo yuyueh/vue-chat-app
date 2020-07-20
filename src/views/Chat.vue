@@ -2,7 +2,7 @@
     <div class="flex flex-col h-screen">
         <ChatHeader />
         <div class="relative bg-purple-400 font-bold py-3 text-center cursor-pointer">
-            <span @click="anchorToMessage('RHElKZ4MYrj7z5jEXwFU')">
+            <span @click="anchorToMessage('c5CUsObiM9Wyjy493lLu')">
                 最近掏寶辦1111慶祝，有推薦的店家嗎?
             </span>
             <span class="absolute text-white right-0 px-3">
@@ -13,8 +13,8 @@
             ref="messages"
             class="flex-grow overflow-y-auto"
             v-scroll-keep="always"
-            @scroll-top-reach="loadMessagesBefore()"
-            @scroll-bottom-reach="loadMessagesAfter()"
+            @scroll-top-reach="loadTopMessages()"
+            @scroll-bottom-reach="loadBottomMessages()"
             @leave-from-bottom="leave()"
         >
             <div
@@ -130,12 +130,12 @@ export default Vue.extend({
         this.$store.dispatch('initChat');
     },
     methods: {
-        loadMessagesBefore() {
-            this.$store.dispatch('loadMessagesBefore', this.$store.getters.topMessage);
+        loadTopMessages() {
+            this.$store.dispatch('loadTopMessages', this.$store.getters.topMessage);
         },
-        loadMessagesAfter() {
+        loadBottomMessages() {
             this.$data.always = true;
-            this.$store.dispatch('loadMessagesAfter', this.$store.getters.bottomMessage);
+            this.$store.dispatch('loadBottomMessages', this.$store.getters.bottomMessage);
         },
         leave() {
             this.$data.always = false;
@@ -144,7 +144,7 @@ export default Vue.extend({
             this.$store.dispatch('sendMessage', this.$data.message);
             this.$data.message = '';
         },
-        anchorToMessage(id: string) {
+        async anchorToMessage(id: string) {
             const messageBoxElm = this.$refs.messages as Element;
             const targetElm = this.$refs[`message-${id}`] as HTMLElement[];
             const textElm = this.$refs[`message-text-${id}`] as HTMLElement[];
@@ -154,6 +154,9 @@ export default Vue.extend({
                 setTimeout(() => {
                     textElm[0].classList.remove('bg-yellow-300');
                 }, 3000);
+            } else {
+                await this.$store.dispatch('queryMessageRange', id);
+                this.anchorToMessage(id);
             }
         },
     },

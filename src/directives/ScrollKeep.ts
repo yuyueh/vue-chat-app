@@ -5,7 +5,6 @@ let state = {
     scrollHeight: 0,
     isAtBottom: true,
     isAtTop: false,
-    isFixingToBottom: false,
 };
 
 const deviationOfRound = 0.5;
@@ -29,7 +28,6 @@ const isAtTheBottom = (el: Element) =>
 
 const handleElmResize = (el: Element): MutationCallback => () => {
     if (state.alwaysKeepAtEdge && state.isAtBottom) {
-        state.isFixingToBottom = true;
         scrollToBottom(el);
     } else {
         state.isAtBottom = false;
@@ -60,11 +58,7 @@ const handleScroll = (el: Element) => {
     }
 
     if (position.isAtBottom) {
-        if (state.isFixingToBottom) {
-            state.isFixingToBottom = false;
-        } else {
-            el.dispatchEvent(new Event('scroll-bottom-reach'));
-        }
+        el.dispatchEvent(new Event('scroll-bottom-reach'));
     }
 
     state = {
