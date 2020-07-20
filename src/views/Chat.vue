@@ -2,12 +2,15 @@
     <div class="flex flex-col h-screen">
         <ChatHeader />
         <div class="relative bg-purple-400 font-bold py-3 text-center cursor-pointer">
-            最近掏寶辦1111慶祝，有推薦的店家嗎?
+            <span @click="anchorToMessage('RHElKZ4MYrj7z5jEXwFU')">
+                最近掏寶辦1111慶祝，有推薦的店家嗎?
+            </span>
             <span class="absolute text-white right-0 px-3">
                 <i class="fas fa-sort-down"></i>
             </span>
         </div>
         <div
+            ref="messages"
             class="flex-grow overflow-y-auto"
             v-scroll-keep="always"
             @scroll-top-reach="loadMessagesBefore()"
@@ -15,6 +18,7 @@
             @leave-from-bottom="leave()"
         >
             <div
+                :ref="'message-' + message.id"
                 v-for="message in messages"
                 :key="message.id"
                 :class="{
@@ -35,8 +39,9 @@
                     {{ message.displayName }}
                 </div>
                 <p
+                    :ref="'message-text-' + message.id"
                     v-if="message.type === ChatEnum.Text"
-                    class="inline-block border rounded-b-lg p-3"
+                    class="inline-block border rounded-b-lg p-3 transition-colors duration-1000 ease-in-out"
                     :class="{
                         'border-green-600': message.myself,
                         'border-red-600': !message.myself,
@@ -138,6 +143,18 @@ export default Vue.extend({
         sendMessage() {
             this.$store.dispatch('sendMessage', this.$data.message);
             this.$data.message = '';
+        },
+        anchorToMessage(id: string) {
+            const messageBoxElm = this.$refs.messages as Element;
+            const targetElm = this.$refs[`message-${id}`] as HTMLElement[];
+            const textElm = this.$refs[`message-text-${id}`] as HTMLElement[];
+            if (targetElm && targetElm[0]) {
+                messageBoxElm.scrollTo(0, targetElm[0].offsetTop - messageBoxElm.clientHeight / 2);
+                textElm[0].classList.add('bg-yellow-300');
+                setTimeout(() => {
+                    textElm[0].classList.remove('bg-yellow-300');
+                }, 3000);
+            }
         },
     },
 });
