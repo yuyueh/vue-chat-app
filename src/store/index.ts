@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import * as firebase from 'firebase';
-import router from '@/router/index';
+import { router } from '@/router';
+import ChatModule from './ChatModule';
 
 Vue.use(Vuex);
 
@@ -39,5 +40,7 @@ export default new Vuex.Store({
                 });
         },
     },
-    modules: {},
+    modules: {
+        chat: ChatModule,
+    },
 });

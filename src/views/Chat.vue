@@ -2,23 +2,17 @@
     <div class="flex flex-col h-screen">
         <div class="flex justify-between">
             <div>
-                <div class="p-6 font-bold cursor-pointer inline-block cursor">
-                    首頁
-                </div>
-                <div class="p-6 font-bold cursor-pointer inline-block cursor">
-                    本日話題
-                </div>
-                <div class="p-6 font-bold inline-block border-b-4 border-blue-800">
-                    偷偷說
-                </div>
+                <div class="p-6 font-bold cursor-pointer inline-block cursor">首頁</div>
+                <div class="p-6 font-bold cursor-pointer inline-block cursor">本日話題</div>
+                <div class="p-6 font-bold inline-block border-b-4 border-blue-800">偷偷說</div>
             </div>
-            <div class="p-6 bg-blue-800 border-b-4 border-blue-800 text-white">
-                測試一
-            </div>
+            <div class="p-6 bg-blue-800 border-b-4 border-blue-800 text-white">測試一</div>
         </div>
         <div class="relative bg-purple-400 font-bold py-3 text-center cursor-pointer">
             最近掏寶辦1111慶祝，有推薦的店家嗎?
-            <span class="absolute text-white right-0 px-3"><i class="fas fa-sort-down"></i></span>
+            <span class="absolute text-white right-0 px-3">
+                <i class="fas fa-sort-down"></i>
+            </span>
         </div>
         <div class="flex-grow overflow-y-auto">
             <div class="container mx-auto border-red p-3 text-left">
@@ -56,7 +50,7 @@
                 <img
                     class="w-1/3 py-5 px-24 cursor-pointer inline-block"
                     src="../assets/images/sticker1.png"
-                    alt=""
+                    alt
                 />
             </div>
             <div class="container mx-auto border-green p-3 text-right">
@@ -64,7 +58,7 @@
                 <img
                     class="w-1/3 py-5 px-24 cursor-pointer inline-block"
                     src="../assets/images/sticker1.png"
-                    alt=""
+                    alt
                 />
             </div>
             <div class="container mx-auto border-green p-3 text-right">
@@ -117,6 +111,16 @@
                 src="./assets/images/sticker4.png"
                 alt=""
             />
-        </div> -->
+    </div>-->
     </div>
 </template>
+
+<script lang="ts">
+import Vue from 'vue';
+
+export default Vue.extend({
+    mounted() {
+        this.$store.dispatch('initChatAsync');
+    },
+});
+</script>
