@@ -79,32 +79,32 @@
                     <i class="fas fa-location-arrow"></i>
                 </div>
             </div>
-        </div>
-        <div class="flex flex-wrap overflow-y-auto" v-if="openStickerList">
-            <img
-                @click="sendSticker('sticker1.png')"
-                class="w-1/3 py-5 px-24 cursor-pointer"
-                src="/images/sticker/sticker1.png"
-                alt=""
-            />
-            <img
-                @click="sendSticker('sticker2.png')"
-                class="w-1/3 py-5 px-24 cursor-pointer"
-                src="/images/sticker/sticker2.png"
-                alt=""
-            />
-            <img
-                @click="sendSticker('sticker3.png')"
-                class="w-1/3 py-5 px-24 cursor-pointer"
-                src="/images/sticker/sticker3.png"
-                alt=""
-            />
-            <img
-                @click="sendSticker('sticker4.png')"
-                class="w-1/3 py-5 px-24 cursor-pointer"
-                src="/images/sticker/sticker4.png"
-                alt=""
-            />
+            <div class="flex flex-wrap overflow-y-auto max-h-200p" v-if="openStickerList">
+                <img
+                    @click="sendSticker('sticker1.png')"
+                    class="w-1/3 py-5 px-24 cursor-pointer"
+                    src="/images/sticker/sticker1.png"
+                    alt=""
+                />
+                <img
+                    @click="sendSticker('sticker2.png')"
+                    class="w-1/3 py-5 px-24 cursor-pointer"
+                    src="/images/sticker/sticker2.png"
+                    alt=""
+                />
+                <img
+                    @click="sendSticker('sticker3.png')"
+                    class="w-1/3 py-5 px-24 cursor-pointer"
+                    src="/images/sticker/sticker3.png"
+                    alt=""
+                />
+                <img
+                    @click="sendSticker('sticker4.png')"
+                    class="w-1/3 py-5 px-24 cursor-pointer"
+                    src="/images/sticker/sticker4.png"
+                    alt=""
+                />
+            </div>
         </div>
     </div>
 </template>
