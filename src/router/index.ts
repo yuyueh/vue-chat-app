@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import Login from '@/views/Login.vue';
-import store from '../store';
+import { Store } from 'vuex';
 
 Vue.use(VueRouter);
 
@@ -19,20 +19,25 @@ const routes: Array<RouteConfig> = [
             requiresAuth: true,
         },
     },
+    { path: '*', redirect: '/chat' },
 ];
 
-const router = new VueRouter({
+export const router = new VueRouter({
     routes,
 });
 
-router.beforeEach((to, from, next) => {
-    if (to.matched.some((record) => record.meta.requiresAuth) && !store.state.user.authenticated) {
-        next({
-            path: '/login',
-        });
-    } else {
-        next();
-    }
-});
-
-export default router;
+export default function (store: Store<any>): VueRouter {
+    router.beforeEach((to, from, next) => {
+        if (
+            to.matched.some((record) => record.meta.requiresAuth) &&
+            !store.state.user.authenticated
+        ) {
+            next({
+                path: '/login',
+            });
+        } else {
+            next();
+        }
+    });
+    return router;
+}
