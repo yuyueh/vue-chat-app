@@ -17,7 +17,7 @@ export default {
     name: 'Login',
     methods: {
         login() {
-            this.$store.dispatch('loginAsync');
+            this.$store.dispatch('login');
         },
     },
 };

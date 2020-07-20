@@ -28,16 +28,21 @@ export default new Vuex.Store({
         },
     },
     actions: {
-        loginAsync({ commit }) {
+        async login({ commit }) {
+            // login
             const provider = new firebase.auth.GoogleAuthProvider();
-            firebase
-                .auth()
-                .signInWithPopup(provider)
-                .then(() => {
-                    const user = firebase.auth()?.currentUser as firebase.User;
-                    commit('login', user);
-                    router.push('chat');
-                });
+            await firebase.auth().signInWithPopup(provider);
+            const user = firebase.auth()?.currentUser as firebase.User;
+
+            // update member info
+            await firebase.firestore().collection('members').doc(user.uid).set({
+                displayName: user.displayName,
+                email: user.email,
+            });
+
+            // success login
+            commit('login', user);
+            router.push('chat');
         },
     },
     modules: {
