@@ -12,7 +12,7 @@
         <div
             ref="messages"
             class="flex-grow overflow-y-auto"
-            v-scroll-keep="always"
+            v-scroll-keep="atBottom && isNewestLoaded"
             @scroll-top-reach="loadTopMessages()"
             @scroll-bottom-reach="loadBottomMessages()"
             @leave-from-bottom="leave()"
@@ -116,7 +116,7 @@ export default Vue.extend({
     },
     data() {
         return {
-            always: true,
+            atBottom: true,
             ChatEnum,
             message: '',
         };
@@ -124,6 +124,9 @@ export default Vue.extend({
     computed: {
         messages() {
             return this.$store.state.chat.messages;
+        },
+        isNewestLoaded() {
+            return this.$store.state.chat.isNewestLoaded;
         },
     },
     mounted() {
@@ -134,13 +137,16 @@ export default Vue.extend({
             this.$store.dispatch('loadTopMessages', this.$store.getters.topMessage);
         },
         loadBottomMessages() {
-            this.$data.always = true;
+            this.$data.atBottom = true;
             this.$store.dispatch('loadBottomMessages', this.$store.getters.bottomMessage);
         },
         leave() {
-            this.$data.always = false;
+            this.$data.atBottom = false;
         },
         sendMessage() {
+            if (!this.$data.message) {
+                return;
+            }
             this.$store.dispatch('sendMessage', this.$data.message);
             this.$data.message = '';
         },

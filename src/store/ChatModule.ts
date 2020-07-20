@@ -36,7 +36,7 @@ const ChatModule: Module<any, any> = {
     state: {
         members: {},
         messages: [],
-        keepPosition: true,
+        isNewestLoaded: true,
     },
     mutations: {
         setAllMembers(state, members) {
@@ -44,6 +44,9 @@ const ChatModule: Module<any, any> = {
         },
         setMessages(state, messages: Message[]) {
             state.messages = messages;
+        },
+        setIsNewestLoaded(state, isNewestLoaded) {
+            state.isNewestLoaded = isNewestLoaded;
         },
         pushBottomMessage(state, message: Message) {
             state.messages = [...state.messages, message];
@@ -89,7 +92,8 @@ const ChatModule: Module<any, any> = {
                         .forEach(function (change) {
                             if (
                                 !s.metadata.hasPendingWrites &&
-                                (change.type === 'modified' || change.type === 'added')
+                                (change.type === 'modified' || change.type === 'added') &&
+                                state.isNewestLoaded
                             ) {
                                 commit(
                                     'pushBottomMessage',
@@ -112,18 +116,28 @@ const ChatModule: Module<any, any> = {
                     );
                 });
         },
-        loadBottomMessages({ commit, rootState, state }, { doc: firstDocument }) {
-            return messageRefFactory()
-                .orderBy('timestamp', 'desc')
-                .endBefore(firstDocument)
+        async loadBottomMessages({ commit, rootState, state }, { doc: targetDoc }) {
+            const { docs: messageDocs, empty: emptyMessages } = await messageRefFactory()
+                .orderBy('timestamp', 'asc')
+                .startAfter(targetDoc)
                 .limit(itemPerPage)
-                .get()
-                .then(({ docs }) => {
-                    commit(
-                        'pushBottomMessages',
-                        docs.slice().reverse().map(documentToMessage.bind(this, rootState, state))
-                    );
-                });
+                .get();
+
+            const { docs: lastMessage } = await messageRefFactory()
+                .orderBy('timestamp', 'desc')
+                .limit(1)
+                .get();
+
+            commit(
+                'pushBottomMessages',
+                messageDocs.map(documentToMessage.bind(this, rootState, state))
+            );
+            setTimeout(() => {
+                commit(
+                    'setIsNewestLoaded',
+                    emptyMessages || messageDocs[messageDocs.length - 1].id === lastMessage[0].id
+                );
+            }, 0);
         },
         sendMessage({ rootState }, text) {
             return messageRefFactory().add({
@@ -157,7 +171,13 @@ const ChatModule: Module<any, any> = {
                 ...newer.map(documentToMessage.bind(this, rootState, state)),
             ];
 
+            const { docs: lastMessage } = await messageRefFactory()
+                .orderBy('timestamp', 'desc')
+                .limit(1)
+                .get();
+
             commit('setMessages', result);
+            commit('setIsNewestLoaded', result[result.length - 1].id === lastMessage[0].id);
         },
     },
     getters: {
