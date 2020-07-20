@@ -12,7 +12,6 @@ const ChatModule: Module<any, any> = {
             state.members = members;
         },
         setMessages(state, messages) {
-            console.log(messages);
             state.messages = messages;
         },
     },

@@ -7,7 +7,13 @@
                 <i class="fas fa-sort-down"></i>
             </span>
         </div>
-        <div class="flex-grow overflow-y-auto">
+        <div
+            class="flex-grow overflow-y-auto"
+            v-scroll-keep="always"
+            @scroll-top-reach="top()"
+            @scroll-bottom-reach="bottom()"
+            @leave-from-bottom="leave()"
+        >
             <div
                 v-for="message in messages"
                 :key="message.id"
@@ -100,6 +106,7 @@ export default Vue.extend({
     },
     data() {
         return {
+            always: true,
             ChatEnum,
         };
     },
@@ -110,6 +117,17 @@ export default Vue.extend({
     },
     mounted() {
         this.$store.dispatch('initChat');
+    },
+    methods: {
+        top() {
+            console.log('top');
+        },
+        bottom() {
+            console.log('bottom');
+        },
+        leave() {
+            console.log('leave');
+        },
     },
 });
 </script>
