@@ -1,15 +1,6 @@
 <template>
     <div class="flex flex-col h-screen">
-        <div class="flex justify-between">
-            <div>
-                <div class="p-6 font-bold cursor-pointer inline-block cursor">首頁</div>
-                <div class="p-6 font-bold cursor-pointer inline-block cursor">本日話題</div>
-                <div class="p-6 font-bold inline-block border-b-4 border-blue-800">偷偷說</div>
-            </div>
-            <div class="p-6 bg-blue-800 border-b-4 border-blue-800 text-white">
-                {{ currentUser.displayName }}
-            </div>
-        </div>
+        <ChatHeader />
         <div class="relative bg-purple-400 font-bold py-3 text-center cursor-pointer">
             最近掏寶辦1111慶祝，有推薦的店家嗎?
             <span class="absolute text-white right-0 px-3">
@@ -101,17 +92,18 @@
 <script lang="ts">
 import Vue from 'vue';
 import ChatEnum from '@/models/ChatTypeEnum';
+import ChatHeader from '../components/ChatHeader.vue';
 
 export default Vue.extend({
+    components: {
+        ChatHeader,
+    },
     data() {
         return {
             ChatEnum,
         };
     },
     computed: {
-        currentUser() {
-            return this.$store.state.user;
-        },
         messages() {
             return this.$store.state.chat.messages;
         },
