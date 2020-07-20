@@ -1,6 +1,7 @@
 import * as firebase from 'firebase';
 import { Module } from 'vuex';
 import { Message } from '@/models/MessageModel';
+import ChatEnum from '@/models/ChatTypeEnum';
 
 const roomId = 'ueV66nJQ69h8jqNZvPa6';
 const itemPerPage = 10;
@@ -141,9 +142,17 @@ const ChatModule: Module<any, any> = {
         },
         sendMessage({ rootState }, text) {
             return messageRefFactory().add({
-                type: 1,
+                type: ChatEnum.Text,
                 uid: rootState.user.uid,
                 text,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+        },
+        sendSticker({ rootState }, imagePath) {
+            return messageRefFactory().add({
+                type: ChatEnum.Sticker,
+                uid: rootState.user.uid,
+                imagePath,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
             });
         },

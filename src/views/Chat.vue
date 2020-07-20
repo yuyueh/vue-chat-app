@@ -54,7 +54,7 @@
                 <img
                     v-else-if="message.type === ChatEnum.Sticker"
                     class="w-1/3 py-5 px-24 cursor-pointer inline-block"
-                    src="../assets/images/sticker1.png"
+                    src="/images/sticker/sticker1.png"
                     alt
                 />
             </div>
@@ -64,7 +64,7 @@
                 <div class="p-5 cursor-pointer">
                     <i class="far fa-images"></i>
                 </div>
-                <div class="p-5 cursor-pointer">
+                <div class="p-5 cursor-pointer" @click="toggleStickerList(!openStickerList)">
                     <i class="far fa-smile-beam"></i>
                 </div>
                 <div class="py-5 flex-grow">
@@ -80,28 +80,32 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="flex flex-wrap overflow-y-auto">
+        <div class="flex flex-wrap overflow-y-auto" v-if="openStickerList">
             <img
+                @click="sendSticker('sticker1.png')"
                 class="w-1/3 py-5 px-24 cursor-pointer"
-                src="./assets/images/sticker1.png"
+                src="/images/sticker/sticker1.png"
                 alt=""
             />
             <img
+                @click="sendSticker('sticker2.png')"
                 class="w-1/3 py-5 px-24 cursor-pointer"
-                src="./assets/images/sticker2.png"
+                src="/images/sticker/sticker2.png"
                 alt=""
             />
             <img
+                @click="sendSticker('sticker3.png')"
                 class="w-1/3 py-5 px-24 cursor-pointer"
-                src="./assets/images/sticker3.png"
+                src="/images/sticker/sticker3.png"
                 alt=""
             />
             <img
+                @click="sendSticker('sticker4.png')"
                 class="w-1/3 py-5 px-24 cursor-pointer"
-                src="./assets/images/sticker4.png"
+                src="/images/sticker/sticker4.png"
                 alt=""
             />
-    </div>-->
+        </div>
     </div>
 </template>
 
@@ -119,6 +123,7 @@ export default Vue.extend({
             atBottom: true,
             ChatEnum,
             message: '',
+            openStickerList: false,
         };
     },
     computed: {
@@ -150,6 +155,10 @@ export default Vue.extend({
             this.$store.dispatch('sendMessage', this.$data.message);
             this.$data.message = '';
         },
+        sendSticker(stickerPath: string) {
+            this.$store.dispatch('sendSticker', stickerPath);
+            this.$data.openStickerList = false;
+        },
         async anchorToMessage(id: string) {
             const messageBoxElm = this.$refs.messages as Element;
             const targetElm = this.$refs[`message-${id}`] as HTMLElement[];
@@ -164,6 +173,9 @@ export default Vue.extend({
                 await this.$store.dispatch('queryMessageRange', id);
                 this.anchorToMessage(id);
             }
+        },
+        toggleStickerList(open: boolean) {
+            this.$data.openStickerList = open;
         },
     },
 });
