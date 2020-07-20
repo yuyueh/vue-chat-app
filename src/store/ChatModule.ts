@@ -30,16 +30,14 @@ const ChatModule: Module<any, any> = {
         setAllMembers(state, members) {
             state.members = members;
         },
-        pushLastMessage(state, message: Message) {
+        pushBottomMessage(state, message: Message) {
             state.messages = [...state.messages, message];
         },
-        pushLastMessages(state, messages: Message[]) {
-            console.log(messages);
-            state.messages = [...state.messages, ...messages];
-        },
-        pushEarlyMessages(state, messages: Message[]) {
-            console.log(messages);
+        pushTopMessages(state, messages: Message[]) {
             state.messages = [...messages, ...state.messages];
+        },
+        pushBottomMessages(state, messages: Message[]) {
+            state.messages = [...state.messages, ...messages];
         },
     },
     actions: {
@@ -74,17 +72,20 @@ const ChatModule: Module<any, any> = {
                 .orderBy('timestamp', 'desc')
                 .limit(itemPerPage)
                 .onSnapshot((s) => {
-                    s.docChanges().forEach(function (change) {
-                        if (
-                            (change.type === 'modified' && s.metadata.hasPendingWrites) ||
-                            change.type === 'added'
-                        ) {
-                            commit(
-                                'pushLastMessage',
-                                documentToMessage(rootState, state, change.doc)
-                            );
-                        }
-                    });
+                    s.docChanges()
+                        .slice()
+                        .reverse()
+                        .forEach(function (change) {
+                            if (
+                                !s.metadata.hasPendingWrites &&
+                                (change.type === 'modified' || change.type === 'added')
+                            ) {
+                                commit(
+                                    'pushBottomMessage',
+                                    documentToMessage(rootState, state, change.doc)
+                                );
+                            }
+                        });
                 });
         },
         loadMessagesBefore({ commit, rootState, state }, { doc: lastDocument }) {
@@ -99,8 +100,8 @@ const ChatModule: Module<any, any> = {
                 .get()
                 .then(({ docs }) => {
                     commit(
-                        'pushLastMessages',
-                        docs.map(documentToMessage.bind(this, rootState, state))
+                        'pushTopMessages',
+                        docs.slice().reverse().map(documentToMessage.bind(this, rootState, state))
                     );
                 });
         },
@@ -116,21 +117,31 @@ const ChatModule: Module<any, any> = {
                 .get()
                 .then(({ docs }) => {
                     commit(
-                        'pushEarlyMessages',
-                        docs.map(documentToMessage.bind(this, rootState, state))
+                        'pushBottomMessages',
+                        docs.slice().reverse().map(documentToMessage.bind(this, rootState, state))
                     );
+                });
+        },
+        sendMessage({ rootState }, text) {
+            return firebase
+                .firestore()
+                .collection('messages')
+                .doc(roomId)
+                .collection('messages')
+                .add({
+                    type: 1,
+                    uid: rootState.user.uid,
+                    text,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                 });
         },
     },
     getters: {
-        messages: (state) => {
-            return state.messages.slice().reverse();
-        },
-        firstMessage: (state) => {
-            return state.messages[state.messages.length - 1];
-        },
-        lastMessage: (state) => {
+        topMessage: (state) => {
             return state.messages[0];
+        },
+        bottomMessage: (state) => {
+            return state.messages[state.messages.length - 1];
         },
     },
 };

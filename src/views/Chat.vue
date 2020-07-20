@@ -63,9 +63,14 @@
                     <i class="far fa-smile-beam"></i>
                 </div>
                 <div class="py-5 flex-grow">
-                    <input class="w-full border-2 border-black rounded" type="text" />
+                    <input
+                        class="w-full border-2 border-black rounded"
+                        type="text"
+                        v-model="message"
+                        @keyup.enter="sendMessage()"
+                    />
                 </div>
-                <div class="p-5 cursor-pointer">
+                <div class="p-5 cursor-pointer" @click="sendMessage()">
                     <i class="fas fa-location-arrow"></i>
                 </div>
             </div>
@@ -108,11 +113,12 @@ export default Vue.extend({
         return {
             always: true,
             ChatEnum,
+            message: '',
         };
     },
     computed: {
         messages() {
-            return this.$store.getters.messages;
+            return this.$store.state.chat.messages;
         },
     },
     mounted() {
@@ -120,14 +126,18 @@ export default Vue.extend({
     },
     methods: {
         loadMessagesBefore() {
-            this.$store.dispatch('loadMessagesBefore', this.$store.getters.firstMessage);
+            this.$store.dispatch('loadMessagesBefore', this.$store.getters.topMessage);
         },
         loadMessagesAfter() {
             this.$data.always = true;
-            this.$store.dispatch('loadMessagesAfter', this.$store.getters.lastMessage);
+            this.$store.dispatch('loadMessagesAfter', this.$store.getters.bottomMessage);
         },
         leave() {
             this.$data.always = false;
+        },
+        sendMessage() {
+            this.$store.dispatch('sendMessage', this.$data.message);
+            this.$data.message = '';
         },
     },
 });
