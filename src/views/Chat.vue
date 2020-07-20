@@ -10,8 +10,8 @@
         <div
             class="flex-grow overflow-y-auto"
             v-scroll-keep="always"
-            @scroll-top-reach="top()"
-            @scroll-bottom-reach="bottom()"
+            @scroll-top-reach="loadMessagesBefore()"
+            @scroll-bottom-reach="loadMessagesAfter()"
             @leave-from-bottom="leave()"
         >
             <div
@@ -112,21 +112,22 @@ export default Vue.extend({
     },
     computed: {
         messages() {
-            return this.$store.state.chat.messages;
+            return this.$store.getters.messages;
         },
     },
     mounted() {
         this.$store.dispatch('initChat');
     },
     methods: {
-        top() {
-            console.log('top');
+        loadMessagesBefore() {
+            this.$store.dispatch('loadMessagesBefore', this.$store.getters.firstMessage);
         },
-        bottom() {
-            console.log('bottom');
+        loadMessagesAfter() {
+            this.$data.always = true;
+            this.$store.dispatch('loadMessagesAfter', this.$store.getters.lastMessage);
         },
         leave() {
-            console.log('leave');
+            this.$data.always = false;
         },
     },
 });
