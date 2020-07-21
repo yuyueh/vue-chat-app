@@ -38,6 +38,7 @@ const ChatModule: Module<any, any> = {
         members: {},
         messages: [],
         isNewestLoaded: true,
+        loading: false,
     },
     mutations: {
         setAllMembers(state, members) {
@@ -48,6 +49,9 @@ const ChatModule: Module<any, any> = {
         },
         setIsNewestLoaded(state, isNewestLoaded) {
             state.isNewestLoaded = isNewestLoaded;
+        },
+        setLoading(state, loading) {
+            state.loading = loading;
         },
         pushBottomMessage(state, message: Message) {
             state.messages = [...state.messages, message];
@@ -157,10 +161,11 @@ const ChatModule: Module<any, any> = {
             });
         },
         async queryMessageRange({ commit, rootState, state }, id) {
+            commit('setLoading', true);
             const targetDoc = await messageRefFactory().doc(id).get();
 
             if (!targetDoc.exists) {
-                throw Error('message not found.');
+                alert('查無公告');
             }
 
             const { docs: newer } = await messageRefFactory()
@@ -187,6 +192,7 @@ const ChatModule: Module<any, any> = {
 
             commit('setMessages', result);
             commit('setIsNewestLoaded', result[result.length - 1].id === lastMessage[0].id);
+            commit('setLoading', false);
         },
     },
     getters: {

@@ -1,11 +1,21 @@
 <template>
     <div class="flex flex-col h-screen">
+        <div
+            v-if="loading"
+            class="absolute h-full w-full justify-center items-center flex bg-gray-500 bg-opacity-25"
+        >
+            <div class="w-full h-full fixed block top-0 left-0 bg-white opacity-75 z-50">
+                <span class="text-blue-500 opacity-75 top-1/2 my-0 mx-auto block relative w-0 h-0">
+                    <i class="fas fa-circle-notch fa-spin fa-5x"></i>
+                </span>
+            </div>
+        </div>
         <ChatHeader />
-        <div class="relative bg-purple-400 font-bold py-3 text-center cursor-pointer">
-            <span @click="anchorToMessage('c5CUsObiM9Wyjy493lLu')">
+        <div class="relative bg-purple-400 font-bold py-3 text-center">
+            <span class="cursor-pointer" @click="anchorToMessage('c5CUsObiM9Wyjy493lLu')">
                 最近掏寶辦1111慶祝，有推薦的店家嗎?
             </span>
-            <span class="absolute text-white right-0 px-3">
+            <span class="absolute text-white right-0 px-3 cursor-pointer">
                 <i class="fas fa-sort-down"></i>
             </span>
         </div>
@@ -53,7 +63,7 @@
                 </p>
                 <img
                     v-else-if="message.type === ChatEnum.Sticker"
-                    class="w-1/3 py-5 px-24 cursor-pointer inline-block"
+                    class="w-200p h-200p py-5 cursor-pointer inline-block"
                     src="/images/sticker/sticker1.png"
                     alt
                 />
@@ -84,25 +94,25 @@
                     @click="sendSticker('sticker1.png')"
                     class="w-1/3 py-5 px-24 cursor-pointer"
                     src="/images/sticker/sticker1.png"
-                    alt=""
+                    alt="sticker1"
                 />
                 <img
                     @click="sendSticker('sticker2.png')"
                     class="w-1/3 py-5 px-24 cursor-pointer"
                     src="/images/sticker/sticker2.png"
-                    alt=""
+                    alt="sticker2"
                 />
                 <img
                     @click="sendSticker('sticker3.png')"
                     class="w-1/3 py-5 px-24 cursor-pointer"
                     src="/images/sticker/sticker3.png"
-                    alt=""
+                    alt="sticker3"
                 />
                 <img
                     @click="sendSticker('sticker4.png')"
                     class="w-1/3 py-5 px-24 cursor-pointer"
                     src="/images/sticker/sticker4.png"
-                    alt=""
+                    alt="sticker4"
                 />
             </div>
         </div>
@@ -132,6 +142,9 @@ export default Vue.extend({
         },
         isNewestLoaded() {
             return this.$store.state.chat.isNewestLoaded;
+        },
+        loading() {
+            return this.$store.state.chat.loading;
         },
     },
     mounted() {
