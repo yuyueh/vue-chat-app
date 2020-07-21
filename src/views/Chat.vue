@@ -63,8 +63,8 @@
                 </p>
                 <img
                     v-else-if="message.type === ChatEnum.Sticker"
-                    class="w-200p h-200p py-5 cursor-pointer inline-block"
-                    src="/images/sticker/sticker1.png"
+                    class="w-200p h-200p py-5 inline-block"
+                    :src="'/images/sticker/' + message.imagePath"
                     alt
                 />
             </div>
