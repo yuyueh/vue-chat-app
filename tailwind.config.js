@@ -5,9 +5,10 @@ module.exports = {
             whitelist: [
                 `border-${process.env.VUE_APP_MEMBER_DEFAULT_COLOR}`,
                 `text-${process.env.VUE_APP_MEMBER_DEFAULT_COLOR}`,
-                process.env.VUE_APP_MEMBER_COLOR_LIST.split(',').map((color) => `border-${color}`),
-                process.env.VUE_APP_MEMBER_COLOR_LIST.split(',').map((color) => `text-${color}`),
-                'bg-yellow-300',
+                ...process.env.VUE_APP_MEMBER_COLOR_LIST.split(',').map(
+                    (color) => `border-${color}`
+                ),
+                ...process.env.VUE_APP_MEMBER_COLOR_LIST.split(',').map((color) => `text-${color}`),
             ],
         },
     },
