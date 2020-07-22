@@ -1,15 +1,6 @@
 <template>
     <div class="flex flex-col h-screen">
-        <div
-            v-if="loading"
-            class="absolute h-full w-full justify-center items-center flex bg-gray-500 bg-opacity-25"
-        >
-            <div class="w-full h-full fixed block top-0 left-0 bg-white opacity-75 z-50">
-                <span class="text-blue-500 opacity-75 top-1/2 my-0 mx-auto block relative w-0 h-0">
-                    <i class="fas fa-circle-notch fa-spin fa-5x"></i>
-                </span>
-            </div>
-        </div>
+        <Loading v-if="loading" />
         <ChatHeader />
         <div class="relative bg-purple-400 font-bold py-3 text-center">
             <span class="cursor-pointer" @click="anchorToMessage('c5CUsObiM9Wyjy493lLu')">
@@ -122,11 +113,13 @@
 <script lang="ts">
 import Vue from 'vue';
 import ChatEnum from '@/models/ChatTypeEnum';
-import ChatHeader from '../components/ChatHeader.vue';
+import ChatHeader from '@/components/ChatHeader.vue';
+import Loading from '@/components/Loading.vue';
 
 export default Vue.extend({
     components: {
         ChatHeader,
+        Loading,
     },
     data() {
         return {
