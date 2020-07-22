@@ -2,10 +2,13 @@ import * as firebase from 'firebase';
 import { Module } from 'vuex';
 import { Message } from '@/models/MessageModel';
 import ChatEnum from '@/models/ChatTypeEnum';
+import Looper from '@/common/Looper';
 
 const roomId = 'ueV66nJQ69h8jqNZvPa6';
 const itemPerPage = 10;
 let messagesRef: firebase.firestore.CollectionReference;
+const MemberColorsLooper = new Looper(process.env.VUE_APP_MEMBER_COLOR_LIST.split(','));
+const memberDefaultColor = process.env.VUE_APP_MEMBER_DEFAULT_COLOR;
 const messageRefFactory = () => {
     if (!messagesRef) {
         messagesRef = firebase
@@ -29,6 +32,7 @@ const documentToMessage = (
         ...data,
         myself: data.uid === rootState.user.uid,
         displayName: state.members[data.uid]?.displayName,
+        color: state.members[data.uid]?.color,
         doc,
     };
 };
@@ -68,7 +72,7 @@ const ChatModule: Module<any, any> = {
             await dispatch('loadMembers');
             dispatch('listenMessage');
         },
-        loadMembers({ commit }) {
+        loadMembers({ commit, rootState }) {
             return firebase
                 .firestore()
                 .collection('members')
@@ -77,9 +81,15 @@ const ChatModule: Module<any, any> = {
                     commit(
                         'setAllMembers',
                         docs.reduce(
-                            (o, d) => ({
+                            (o, d, i) => ({
                                 ...o,
-                                [d.id]: d.data(),
+                                [d.id]: {
+                                    ...d.data(),
+                                    color:
+                                        rootState.user.uid === d.id
+                                            ? memberDefaultColor
+                                            : MemberColorsLooper.next(),
+                                },
                             }),
                             {}
                         )

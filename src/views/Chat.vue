@@ -11,117 +11,36 @@
             @scroll-bottom-reach="loadBottomMessages()"
             @leave-from-bottom="leave()"
         >
-            <div
-                :ref="'message-' + message.id"
+            <Message
                 v-for="message in messages"
                 :key="message.id"
-                :class="{
-                    'text-left': !message.myself,
-                    'text-right': message.myself,
-                    'border-red-600': !message.myself,
-                    'border-green-600': message.myself,
-                }"
-                class="container mx-auto p-3"
-            >
-                <div
-                    class="pb-2"
-                    :class="{
-                        'text-green-600': message.myself,
-                        'text-red-600': !message.myself,
-                    }"
-                >
-                    {{ message.displayName }}
-                </div>
-                <p
-                    :ref="'message-text-' + message.id"
-                    v-if="message.type === ChatEnum.Text"
-                    class="inline-block border rounded-b-lg p-3 transition-colors duration-1000 ease-in-out"
-                    :class="{
-                        'border-green-600': message.myself,
-                        'border-red-600': !message.myself,
-                        'rounded-tl-lg': message.myself,
-                        'rounded-tr-lg': !message.myself,
-                    }"
-                >
-                    {{ message.text }}
-                </p>
-                <img
-                    v-else-if="message.type === ChatEnum.Sticker"
-                    class="w-200p h-200p py-5 inline-block"
-                    :src="'/images/sticker/' + message.imagePath"
-                    alt
-                />
-            </div>
+                :message="message"
+                :ref="'message-' + message.id"
+            />
         </div>
-        <div class="border-t-4 border-gray-200">
-            <div class="flex container mx-auto">
-                <div class="p-5 cursor-pointer">
-                    <i class="far fa-images"></i>
-                </div>
-                <div class="p-5 cursor-pointer" @click="toggleStickerList(!openStickerList)">
-                    <i class="far fa-smile-beam"></i>
-                </div>
-                <div class="py-5 flex-grow">
-                    <input
-                        class="w-full border-2 border-black rounded"
-                        type="text"
-                        v-model="message"
-                        @keyup.enter="sendMessage()"
-                    />
-                </div>
-                <div class="p-5 cursor-pointer" @click="sendMessage()">
-                    <i class="fas fa-location-arrow"></i>
-                </div>
-            </div>
-            <div class="flex flex-wrap overflow-y-auto max-h-200p" v-if="openStickerList">
-                <img
-                    @click="sendSticker('sticker1.png')"
-                    class="w-1/3 py-5 px-24 cursor-pointer"
-                    src="/images/sticker/sticker1.png"
-                    alt="sticker1"
-                />
-                <img
-                    @click="sendSticker('sticker2.png')"
-                    class="w-1/3 py-5 px-24 cursor-pointer"
-                    src="/images/sticker/sticker2.png"
-                    alt="sticker2"
-                />
-                <img
-                    @click="sendSticker('sticker3.png')"
-                    class="w-1/3 py-5 px-24 cursor-pointer"
-                    src="/images/sticker/sticker3.png"
-                    alt="sticker3"
-                />
-                <img
-                    @click="sendSticker('sticker4.png')"
-                    class="w-1/3 py-5 px-24 cursor-pointer"
-                    src="/images/sticker/sticker4.png"
-                    alt="sticker4"
-                />
-            </div>
-        </div>
+        <MessageInput @sendMessage="sendMessage" @sendSticker="sendSticker" />
     </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import ChatEnum from '@/models/ChatTypeEnum';
 import Announcement from '@/components/Announcement.vue';
 import ChatHeader from '@/components/ChatHeader.vue';
 import Loading from '@/components/Loading.vue';
+import Message from '@/components/Message.vue';
+import MessageInput from '@/components/MessageInput.vue';
 
 export default Vue.extend({
     components: {
         Announcement,
         ChatHeader,
         Loading,
+        Message,
+        MessageInput,
     },
     data() {
         return {
             atBottom: true,
-            ChatEnum,
-            message: '',
-            openStickerList: false,
         };
     },
     computed: {
@@ -149,34 +68,28 @@ export default Vue.extend({
         leave() {
             this.$data.atBottom = false;
         },
-        sendMessage() {
-            if (!this.$data.message) {
-                return;
-            }
-            this.$store.dispatch('sendMessage', this.$data.message);
-            this.$data.message = '';
+        sendMessage(message: string) {
+            this.$store.dispatch('sendMessage', message);
         },
         sendSticker(stickerPath: string) {
             this.$store.dispatch('sendSticker', stickerPath);
-            this.$data.openStickerList = false;
         },
         async anchorToMessage(id: string) {
             const messageBoxElm = this.$refs.messages as Element;
-            const targetElm = this.$refs[`message-${id}`] as HTMLElement[];
-            const textElm = this.$refs[`message-text-${id}`] as HTMLElement[];
+            const targetElm = this.$refs[`message-${id}`] as Vue[];
             if (targetElm && targetElm[0]) {
-                messageBoxElm.scrollTo(0, targetElm[0].offsetTop - messageBoxElm.clientHeight / 2);
-                textElm[0].classList.add('bg-yellow-300');
-                setTimeout(() => {
-                    textElm[0].classList.remove('bg-yellow-300');
-                }, 3000);
+                messageBoxElm.scrollTo(
+                    0,
+                    (targetElm[0].$el as HTMLElement).offsetTop - messageBoxElm.clientHeight / 2
+                );
+
+                // targetEle is Message Component
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (targetElm[0] as any).highlight();
             } else {
                 await this.$store.dispatch('queryMessageRange', id);
                 this.anchorToMessage(id);
             }
-        },
-        toggleStickerList(open: boolean) {
-            this.$data.openStickerList = open;
         },
     },
 });
