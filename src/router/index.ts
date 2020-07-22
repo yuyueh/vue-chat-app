@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import Login from '@/views/Login.vue';
 import { Store } from 'vuex';
+import { RootState } from '@/models/RootState';
 
 Vue.use(VueRouter);
 
@@ -26,7 +27,7 @@ export const router = new VueRouter({
     routes,
 });
 
-export default function (store: Store<any>): VueRouter {
+export default function (store: Store<RootState>): VueRouter {
     router.beforeEach((to, from, next) => {
         if (
             to.matched.some((record) => record.meta.requiresAuth) &&

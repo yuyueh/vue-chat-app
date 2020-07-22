@@ -1,8 +1,10 @@
 import * as firebase from 'firebase';
 import { Module } from 'vuex';
-import { Message } from '@/models/MessageModel';
+import { Message } from '@/models/MessageState';
 import ChatEnum from '@/models/ChatTypeEnum';
 import Looper from '@/common/Looper';
+import { ChatState } from '@/models/ChatState';
+import { RootState } from '@/models/RootState';
 
 const roomId = 'ueV66nJQ69h8jqNZvPa6';
 const itemPerPage = 10;
@@ -22,8 +24,8 @@ const messageRefFactory = () => {
 };
 
 const documentToMessage = (
-    rootState: any,
-    state: any,
+    rootState: RootState,
+    state: ChatState,
     doc: firebase.firestore.DocumentData
 ): Message => {
     const data = doc.data();
@@ -37,7 +39,7 @@ const documentToMessage = (
     };
 };
 
-const ChatModule: Module<any, any> = {
+const ChatModule: Module<ChatState, any> = {
     state: {
         members: {},
         messages: [],
@@ -81,7 +83,7 @@ const ChatModule: Module<any, any> = {
                     commit(
                         'setAllMembers',
                         docs.reduce(
-                            (o, d, i) => ({
+                            (o, d) => ({
                                 ...o,
                                 [d.id]: {
                                     ...d.data(),
@@ -104,7 +106,7 @@ const ChatModule: Module<any, any> = {
                     s.docChanges()
                         .slice()
                         .reverse()
-                        .forEach(function (change) {
+                        .forEach((change) => {
                             if (
                                 !s.metadata.hasPendingWrites &&
                                 (change.type === 'modified' || change.type === 'added') &&
@@ -175,7 +177,7 @@ const ChatModule: Module<any, any> = {
             const targetDoc = await messageRefFactory().doc(id).get();
 
             if (!targetDoc.exists) {
-                alert('查無公告');
+                throw Error('message not found.');
             }
 
             const { docs: newer } = await messageRefFactory()
