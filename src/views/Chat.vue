@@ -2,14 +2,7 @@
     <div class="flex flex-col h-screen">
         <Loading v-if="loading" />
         <ChatHeader />
-        <div class="relative bg-purple-400 font-bold py-3 text-center">
-            <span class="cursor-pointer" @click="anchorToMessage('c5CUsObiM9Wyjy493lLu')">
-                最近掏寶辦1111慶祝，有推薦的店家嗎?
-            </span>
-            <span class="absolute text-white right-0 px-3 cursor-pointer">
-                <i class="fas fa-sort-down"></i>
-            </span>
-        </div>
+        <Announcement @anchorTo="anchorToMessage" />
         <div
             ref="messages"
             class="flex-grow overflow-y-auto"
@@ -113,11 +106,13 @@
 <script lang="ts">
 import Vue from 'vue';
 import ChatEnum from '@/models/ChatTypeEnum';
+import Announcement from '@/components/Announcement.vue';
 import ChatHeader from '@/components/ChatHeader.vue';
 import Loading from '@/components/Loading.vue';
 
 export default Vue.extend({
     components: {
+        Announcement,
         ChatHeader,
         Loading,
     },
